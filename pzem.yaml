@@ -1,0 +1,156 @@
+esphome:
+  name: main-power
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  baud_rate: 0
+  
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+    password: "f513abd3938fe32e3731d7aea4f704b4"
+
+wifi:
+  ssid: eyera
+  password: x25xnm00
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Test Fallback Hotspot"
+    password: "fTNkDut4iUkr"
+
+captive_portal:
+
+web_server:
+  port: 80
+  
+###
+uart:
+  - id: u_pzem004phazeA #SW
+    tx_pin: GPIO19
+    rx_pin: GPIO18
+    baud_rate: 9600
+  - id: u_pzem004phazeB #HW
+    tx_pin: GPIO17
+    rx_pin: GPIO16
+    baud_rate: 9600
+  - id: u_pzem004phazeC #HW
+    rx_pin: GPIO3
+    tx_pin: GPIO1
+    baud_rate: 9600
+
+modbus:
+  - id: m_pzem004phazeA
+    send_wait_time: 250ms
+    uart_id: u_pzem004phazeA
+  - id: m_pzem004phazeB
+    send_wait_time: 250ms
+    uart_id: u_pzem004phazeB
+  - id: m_pzem004phazeC
+    send_wait_time: 250ms
+    uart_id: u_pzem004phazeC
+
+sensor:
+  - platform: pzemac
+    id: phaze_a
+    voltage:
+      name: "Phaze A Voltage"
+    current:
+      name: "Phaze A Current"
+    power:
+      name: "Phaze A Power"
+    frequency:
+      name: "Phaze A Frequency"
+    power_factor:
+      name: "Phaze A Power Factor"
+    energy:
+      name: "Phaze A Energy"
+    update_interval: 30s
+    address: 1
+    modbus_id: m_pzem004phazeA
+
+  - platform: pzemac
+    id: phaze_b
+    voltage:
+      name: "Phaze B Voltage"
+    current:
+      name: "Phaze B Current"
+    power:
+      name: "Phaze B Power"
+    frequency:
+      name: "Phaze B Frequency"
+    power_factor:
+      name: "Phaze B Power Factor"
+    energy:
+      name: "Phaze B Energy"
+    update_interval: 30s
+    address: 2
+    modbus_id: m_pzem004phazeB
+
+  - platform: pzemac
+    id: phaze_c
+    voltage:
+      name: "Phaze C Voltage"
+    current:
+      name: "Phaze C Current"
+    power:
+      name: "Phaze C Power"
+    frequency:
+      name: "Phaze C Frequency"
+    power_factor:
+      name: "Phaze C Power Factor"
+    energy:
+      name: "Phaze C Energy"
+    update_interval: 30s
+    address: 3
+    modbus_id: m_pzem004phazeC
+    
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO23
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    filters:
+      - delayed_on: 100ms
+    name: 'Main Power'
+    device_class: connectivity
+  - platform: gpio
+    pin:
+      number: GPIO22
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    filters:
+      - delayed_on: 1s
+    name: 'Power_Box Door'
+    device_class: opening
+  - platform: gpio
+    pin:
+      number: GPIO21
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    filters:
+      - delayed_on: 500ms
+    name: 'Perimeter alarm'
+    device_class: opening
+  - platform: status
+    name: "pzem"
+    device_class: opening
+    
+switch:
+  - platform: restart
+    name: "Pzem Restart"
+    
