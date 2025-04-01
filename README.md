@@ -105,6 +105,33 @@ Perimeter Alarm → GPIO21 (подтяжка к +3.3V)
 
 ![Скриншот дашборда Grafana](docs/Grafana.png)
 
+### Необходимые компоненты:
+1. InfluxDB - для хранения исторических данных
+2. Grafana - для визуализации данных
+
+### Настройка InfluxDB в Home Assistant:
+1. Установите InfluxDB через интеграции Home Assistant
+2. Добавьте следующую конфигурацию в `configuration.yaml`:
+
+```yaml
+influxdb:
+  username: homeassistant
+  password: x25xnm00
+  max_retries: 3
+  default_measurement: state
+  include:
+    entities:
+      - sensor.phaze_a_voltage
+      - sensor.phaze_b_voltage
+      - sensor.phaze_c_voltage
+      - sensor.phaze_a_current
+      - sensor.phaze_b_current
+      - sensor.phaze_c_current
+      - sensor.phaze_a_power
+      - sensor.phaze_b_power
+      - sensor.phaze_c_power
+```
+
 ### Особенности дашборда:
 - Автоматическое обновление данных
 - Временной диапазон: последние 6 часов
